@@ -1,0 +1,43 @@
+---
+- hosts: [nautilus]
+  vars:
+    USER_NAME: nautilus
+    KEY_FILE: "{{ NAUTILUS_KEY_FILE }}"
+    HOME_DIR: "/{{ USER_NAME }}"
+  tasks:
+    - include: task_template/create_group_task.yml
+    - include: task_template/create_user_task.yml
+    - include: task_template/change_ssh_key_task.yml
+    - name : "change {{ USER_NAME }} folder access"
+      become: yes
+      become_user: root
+      command: "chmod 750 {{HOME_DIR}}"
+      args:
+        warn: no
+# the command blow is in config_server_global_env.yml
+#    - name : "change hostname"
+#      become: yes
+#      become_user: root
+#      hostname:
+#        name: "{{ host_name }}"
+#    - name : "save iptable"
+#      become: yes
+#      become_user: root
+#      command: "/etc/init.d/iptables save"
+#      args:
+#        warn: no
+#    - name : "stop iptable"
+#      become: yes
+#      become_user: root
+#      command: "/etc/init.d/iptables stop"
+#      args:
+#        warn: no
+#    - name : "turn off when boot"
+#      become: yes
+#      become_user: root
+#      command: "chkconfig iptables off"
+#      args:
+#        warn: no
+- include: send_file_to_nautilus.yml
+# - include: install_package.yml
+...

@@ -1,0 +1,19 @@
+---
+- hosts: [nautilus]
+  vars:
+    ansible_user: nautilus
+    USER_NAME: nautilus
+    LIB_DIR: '.'
+  tasks:
+    - name: send file to nautilus
+      synchronize:
+        mode: push
+        src: "{{ LIB_DIR }}/product_file/"
+        dest: "/{{ USER_NAME }}/"
+    - include: task_template/send_cset_config_task.yml
+    - name : "change {{ USER_NAME }} dir access"
+      command: "chmod 750 /{{ USER_NAME }}"
+      args:
+        warn: no
+...
+

@@ -1,0 +1,12 @@
+---
+    - name : "create {{ USER_NAME }} user"
+      become: yes
+      become_user: root
+      user:
+        name: "{{ USER_NAME }}"
+        createhome : yes
+        home : "{{ HOME_DIR }}"
+        state: present
+        group: "{{ USER_NAME }}"
+...
+

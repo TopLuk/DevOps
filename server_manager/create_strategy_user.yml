@@ -1,0 +1,95 @@
+---
+- hosts: [strategy]
+  vars:
+    HOME_DIR: "/home/{{ STRAT_NAME }}"
+    USER_NAME: "{{ STRAT_NAME }}"
+    KEY_FILE: "{{ STRAT_KEY_FILE }}"
+    USER_GROUP: nautilus
+  tasks:
+    - include: task_template/create_group_task.yml
+    - include: task_template/create_user_task.yml
+    - include: task_template/change_ssh_key_task.yml
+    - include: task_template/add_user_to_group_task.yml
+    - name: "set {{ STRAT_NAME }} release path"
+      become: yes
+      become_user: "{{ STRAT_NAME }}"
+      file:
+        path: '~/release'
+        state: directory
+        mode: 0755
+    - name: "set {{ STRAT_NAME }} strategy path"
+      become: yes
+      become_user: "{{ STRAT_NAME }}"
+      file:
+        path: "~/strategy/{{ STRAT_NAME }}"
+        state: directory
+        mode: 0755
+    - name: "set {{ STRAT_NAME }} strategy instrument.csv"
+      become: yes
+      become_user: "{{ STRAT_NAME }}"
+      file:
+        src: "/nautilus/config/InstrumentInfo.csv"
+        dest: "~/strategy/{{ STRAT_NAME }}/InstrumentInfo.csv"
+        state: link
+    - name: "set {{ STRAT_NAME }} strategy pyController"
+      become: yes
+      become_user: "{{ STRAT_NAME }}"
+      file:
+        src: "/nautilus/script/pyController"
+        dest: "~/strategy/{{ STRAT_NAME }}/pyController"
+        state: link
+    - name: "set {{ STRAT_NAME }} strategy position_change.py"
+      become: yes
+      become_user: "{{ STRAT_NAME }}"
+      file:
+        src: "/nautilus/script/position_change.py"
+        dest: "~/strategy/{{ STRAT_NAME }}/position_change.py"
+        state: link
+    - name: "set {{ STRAT_NAME }} strategy run.sh"
+      become: yes
+      become_user: "{{ STRAT_NAME }}"
+      copy:
+        src: "/nautilus/script/{{ item }}"
+        dest: "~/strategy/{{ STRAT_NAME }}/{{ item }}"
+        mode: 0755
+        remote_src: true
+      with_items:
+        - run.sh
+        - py_trigger.py
+        #- run_without_cset.sh
+    - name: "set {{ STRAT_NAME }} strategy link"
+      become: yes
+      become_user: "{{ STRAT_NAME }}"
+      file:
+        src: "~/release/{{ STRAT_NAME }}"
+        dest: "~/strategy/{{ STRAT_NAME }}/{{ STRAT_NAME }}"
+        state: link
+        force: yes
+    - name: "set Cmnd_Alias NAUTILUS"
+      become: yes
+      become_user: root
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^Cmnd_Alias NAUTILUS'
+        line: 'Cmnd_Alias NAUTILUS = /usr/sbin/tcpdump, /bin/kill, /bin/env, /usr/bin/gdb, /usr/bin/cset'
+    - name: "set requiretty"
+      become: yes
+      become_user: root
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: 'requiretty$'
+        line: 'Defaults    !requiretty'
+    - name: "set {{ STRAT_NAME }} sudo NAUTILUS"
+      become: yes
+      become_user: root
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: "^{{ STRAT_NAME }}"
+        line: '{{ STRAT_NAME }} ALL=(ALL) NOPASSWD: NAUTILUS'
+...
+
+
+

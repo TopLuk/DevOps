@@ -1,0 +1,15 @@
+---
+- hosts: [TTO]
+  vars:
+    ansible_user: "{{ TTO_USER }}"
+    ansible_ssh_private_key_file: "{{ TTO_KEY_FILE }}"
+    USER_NAME: "{{ TTO_USER }}"
+  tasks:
+    - name : "stop TickToOrder test"
+      shell: " ./run.sh stop; rm -rf core.* "
+      args:
+        warn: no
+        chdir: "/home/{{ USER_NAME }}/strategy/TickToOrder"
+...
+
+

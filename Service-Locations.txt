@@ -1,0 +1,26 @@
+SZO-OPENVPN-SERVER (172.30.80.34):
+    OpenVPN:
+        description: OpenVPN server for shenzhen office
+        hosted by docker
+internal-service-01 (172.30.90.80):
+    Atlassian:
+        JIRA:
+            hosted by docker
+        bitbucket:
+            hosted by docker
+        confluence:
+            hosted by docker
+    mysql:
+        hosted by docker
+    jenkins:
+        hosted by docker
+    nginx:
+        hosted by docker
+SZDC-VPNLZDL (172.30.90.80):
+    auto-connect-vpn.ps1
+172.30.50.128:
+    daily backup database
+HKO-OPENVPN-SERVER (172.30.50.121):
+    OpenVPN:
+        description: OpenVPN server for hongkong office
+        hosted by docker

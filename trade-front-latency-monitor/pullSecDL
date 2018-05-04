@@ -1,0 +1,13 @@
+#!/bin/bash
+IPList=(172.205.250.100 172.205.250.110 172.205.250.111 172.205.250.112)
+function ListLatency {
+	HOST=$1
+	echo $HOST `date "+%Y-%m-%d %H:%M:%S"`
+	ping -c 10 -i 0.2 $HOST |awk -F= '{print $4}' |awk '{print $1}' |grep -v "^$"
+	echo "======================================================="
+}
+
+for i in ${IPList[*]}
+do
+	ListLatency ${i}
+done

@@ -1,0 +1,41 @@
+---
+- hosts: [TTO]
+  vars:
+    ansible_user: "{{ TTO_USER }}"
+    ansible_ssh_private_key_file: "{{ TTO_KEY_FILE }}"
+    USER_NAME: "{{ TTO_USER }}"
+  tasks:
+    - name: "send TickToOrder to server"
+      synchronize:
+        mode: push
+        src: "trigger_config/TickToOrder"
+        dest: "/home/{{ USER_NAME }}/strategy/"
+    - name: "send run.sh to server"
+      synchronize:
+        mode: push
+        src: "trigger_config/{{ inventory_hostname }}_run.sh"
+        dest: "/home/{{ USER_NAME }}/strategy/TickToOrder/"
+    - name: "set run.sh link"
+      file:
+        src: "./{{ inventory_hostname }}_run.sh"
+        dest: "/home/{{ USER_NAME }}/strategy/TickToOrder/run.sh"
+        state: link
+    - name: "send {{ inventory_hostname }}_trigger.py to server"
+      synchronize:
+        mode: push
+        src: "trigger_config/{{ inventory_hostname }}_trigger.py"
+        dest: "/home/{{ USER_NAME }}/strategy/TickToOrder/"
+    - name: "set py_trgger.py link"
+      file:
+        src: "./{{ inventory_hostname }}_trigger.py"
+        dest: "/home/{{ USER_NAME }}/strategy/TickToOrder/py_trigger.py"
+        state: link
+...
+
+# change order send number
+# cd trigger_config/
+# sed -i "s/('MaxSendNum', \"[0-9]*\"),$/('MaxSendNum', \"50\"),/g" *_trigger.py
+# sed -i "s/('buyPrice', \".*\")/('buyPrice', \"-1\")/g" py_trigger.py
+# sed -i "s/('sellPrice', \".*\")/('sellPrice', \"-1\")/g" py_trigger.py
+# sed -i "s/--v\=[0-9]* /--v\=10 /g" *run.sh
+

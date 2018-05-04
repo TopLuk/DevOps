@@ -1,0 +1,93 @@
+pipeline {
+    agent any
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        disableConcurrentBuilds()
+    }
+    stages {
+        stage('Check Market Data') {
+            parallel {
+                stage('ZJ202') {
+                    steps {
+                        build job: 'MARKET-DATA-MONITOR-ZJ-TEMPLATE', parameters: [
+                            string(name: 'MACHINE_NAME', value: 'ZJ202'), 
+                            string(name: 'MACHINE_HOST', value: '192.168.1.202'), 
+                            string(name: 'SSH_PORT', value: "${params.SSH_PORT}"), 
+                            string(name: 'RULES', value: "${params.RULES}")
+                        ], wait: true
+                    }
+                }
+                stage('ZJ214') {
+                    steps {
+                        build job: 'MARKET-DATA-MONITOR-ZJ-TEMPLATE', parameters: [
+                            string(name: 'MACHINE_NAME', value: 'ZJ214'), 
+                            string(name: 'MACHINE_HOST', value: '192.168.1.214'), 
+                            string(name: 'SSH_PORT', value: "${params.SSH_PORT}"), 
+                            string(name: 'RULES', value: "${params.RULES}")
+                        ], wait: true
+                    }
+                }
+                stage('ZJ222') {
+                    steps {
+                        build job: 'MARKET-DATA-MONITOR-ZJ-TEMPLATE', parameters: [
+                            string(name: 'MACHINE_NAME', value: 'ZJ222'), 
+                            string(name: 'MACHINE_HOST', value: '192.168.1.222'), 
+                            string(name: 'SSH_PORT', value: "${params.SSH_PORT}"), 
+                            string(name: 'RULES', value: "${params.RULES}")
+                        ], wait: true
+                    }
+                }
+                stage('ZJ231') {
+                    steps {
+                        build job: 'MARKET-DATA-MONITOR-ZJ-TEMPLATE', parameters: [
+                            string(name: 'MACHINE_NAME', value: 'ZJ231'), 
+                            string(name: 'MACHINE_HOST', value: '192.168.1.231'), 
+                            string(name: 'SSH_PORT', value: "${params.SSH_PORT}"), 
+                            string(name: 'RULES', value: "${params.RULES}")
+                        ], wait: true
+                    }
+                }
+                stage('ZJ233') {
+                    steps {
+                        build job: 'MARKET-DATA-MONITOR-ZJ-TEMPLATE', parameters: [
+                            string(name: 'MACHINE_NAME', value: 'ZJ233'), 
+                            string(name: 'MACHINE_HOST', value: '192.168.1.233'), 
+                            string(name: 'SSH_PORT', value: "${params.SSH_PORT}"), 
+                            string(name: 'RULES', value: "${params.RULES}")
+                        ], wait: true
+                    }
+                }
+                stage('ZJ234') {
+                    steps {
+                        build job: 'MARKET-DATA-MONITOR-ZJ-TEMPLATE', parameters: [
+                            string(name: 'MACHINE_NAME', value: 'ZJ234'), 
+                            string(name: 'MACHINE_HOST', value: '192.168.1.234'), 
+                            string(name: 'SSH_PORT', value: "${params.SSH_PORT}"), 
+                            string(name: 'RULES', value: "${params.RULES}")
+                        ], wait: true
+                    }
+                }
+                stage('ZJ246') {
+                    steps {
+                        build job: 'MARKET-DATA-MONITOR-ZJ-TEMPLATE', parameters: [
+                            string(name: 'MACHINE_NAME', value: 'ZJ246'), 
+                            string(name: 'MACHINE_HOST', value: '192.168.1.246'), 
+                            string(name: 'SSH_PORT', value: "${params.SSH_PORT}"), 
+                            string(name: 'RULES', value: "${params.RULES}")
+                        ], wait: true
+                    }
+                }
+            }
+        }
+    }
+    post {
+        failure {
+            build job: 'HIPCHAT-ROOM-NOTIFICATION', parameters: [
+                string(name: 'ROOM', value: '39'), 
+                string(name: 'COLOR', value: 'red'), 
+                string(name: 'AUTH_TOKEN', value: 'Zi70f1FTkdFPBLS9nc0DO1gvtnmSmcLcmXaYwbtv'), 
+                string(name: 'MESSAGE', value: "Job ${env.JOB_NAME} failed: ${env.BUILD_URL}console")
+            ], wait: false
+        }
+    }
+}

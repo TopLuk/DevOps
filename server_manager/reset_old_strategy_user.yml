@@ -1,0 +1,36 @@
+---
+- hosts: [strategy]
+  vars:
+    HOME_DIR: "/home/{{ STRAT_NAME }}"
+    USER_NAME: "{{ STRAT_NAME }}"
+    KEY_FILE: "{{ STRAT_KEY_FILE }}"
+    USER_GROUP: nautilus
+  tasks:
+    - include: task_template/create_group_task.yml
+    - include: task_template/add_user_to_group_task.yml
+    - name: "set Cmnd_Alias NAUTILUS"
+      become: yes
+      become_user: root
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^Cmnd_Alias NAUTILUS'
+        line: 'Cmnd_Alias NAUTILUS = /usr/sbin/tcpdump, /bin/kill, /bin/env, /usr/bin/gdb, /usr/bin/cset'
+    - name: "set requiretty"
+      become: yes
+      become_user: root
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: 'requiretty$'
+        line: 'Defaults    !requiretty'
+    - name: "set {{ STRAT_NAME }} sudo NAUTILUS"
+      become: yes
+      become_user: root
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: "^{{ STRAT_NAME }}"
+        line: '{{ STRAT_NAME }} ALL=(ALL) NOPASSWD: NAUTILUS'
+...
+

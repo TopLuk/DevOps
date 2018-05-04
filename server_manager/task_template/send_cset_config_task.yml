@@ -1,0 +1,23 @@
+---
+#    - name: "send {{ inventory_hostname }}_cset.config to nautilus"
+#      synchronize:
+#        mode: push
+#        src: "cset_config/{{ inventory_hostname }}_cset.config"
+#        dest: "/{{ USER_NAME }}/config/"
+#    - name: "set cset.config link"
+#      file:
+#        src: "/nautilus/config/{{ inventory_hostname }}_cset.config"
+#        dest: "/nautilus/config/cset.config"
+#        state: link
+
+    - name: "send {{ inventory_hostname }}_cset.sh to nautilus"
+      synchronize:
+        mode: push
+        src: "cset_config/{{ inventory_hostname }}_cset.sh"
+        dest: "/{{ USER_NAME }}/config/"
+    - name: "set cset.sh link"
+      file:
+        src: "/nautilus/config/{{ inventory_hostname }}_cset.sh"
+        dest: "/nautilus/config/cset.sh"
+        state: link
+

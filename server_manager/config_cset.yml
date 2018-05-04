@@ -1,0 +1,27 @@
+---
+- hosts: [cset_host]
+  vars:
+    ansible_user: nautilus
+    USER_NAME: nautilus
+  tasks:
+    - include: task_template/send_cset_config_task.yml
+    - name : "change {{ USER_NAME }} dir access"
+      command: "chmod 750 /{{ USER_NAME }}"
+      args:
+        warn: no
+- hosts: [cset_host]
+  tasks:
+    - name : "config {{ inventory_hostname }} ---> {{ ansible_host }} cset"
+      become: yes
+      become_user: root
+      command: "sudo /nautilus/config/cset.sh"
+      args:
+        warn: no
+    - name: "Set cset when system start"
+      become: yes
+      become_user: root
+      lineinfile:
+        dest: /etc/rc.local
+        regexp: "cset"
+        line: "sudo /nautilus/config/cset.sh"
+...

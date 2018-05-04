@@ -1,0 +1,104 @@
+#####################
+## for server
+#####################
+
+#product server
+[guotou_sh]
+guotou202 ansible_host=192.168.11.202 host_name=nautilus-gtds-1
+guotou214 ansible_host=192.168.11.214 host_name=nautilus-gtds-2
+guotou218 ansible_host=192.168.11.218 host_name=nautilus-gtds-3
+guotou220 ansible_host=192.168.11.220 host_name=nautilus-gtds-4
+guotou201 ansible_host=192.168.11.201 host_name=nautilus-gtds-5
+guotou200 ansible_host=192.168.11.200 host_name=nautilus-gtds-6
+guotou203 ansible_host=192.168.11.203 host_name=nautilus-gtds-7
+
+[guotou_DCE]
+guotouDCE202 ansible_host=124.93.224.114 ansible_port=202 host_name=nautilus-gtdl-1
+guotouDCE213 ansible_host=124.93.224.114 ansible_port=213 host_name=nautilus-gtdl-2
+guotouDCE219 ansible_host=124.93.224.114 ansible_port=219 host_name=nautilus-gtdl-3
+
+[guotou:children]
+guotou_sh
+guotou_DCE
+
+[guotou:vars]
+#ansible_user=itops
+ansible_port=219
+#ansible_ssh_private_key_file=./product_private.key
+ansible_user=nautilus
+ansible_ssh_private_key_file=./phillip.dl.key
+
+#office server
+[sz]
+sz160 ansible_host=172.30.60.160 host_name=nautilus-sz-1
+
+[sz:vars]
+ansible_user=itops
+ansible_port=22
+ansible_ssh_private_key_file=./product_private.key
+
+[hklocal]
+hk128 ansible_host=172.30.50.128 host_name=nautilus-hk-1
+
+[hklocal:vars]
+iansible_user=itops
+ansible_port=22
+ansible_ssh_private_key_file=./product_private.key
+
+
+#####################
+## for task
+#####################
+
+[monitor:children]
+guotou
+
+[monitor:vars]
+
+#server need config cset
+[cset_host]
+guotouDCE219
+
+[cset_host:vars]
+#ansible_port=219
+#ansible_ssh_private_key_file=./k
+#ansible_user=nautilus
+
+
+#server need to set new strategy account
+[strategy]
+uat ansible_host=172.30.80.101 ansible_port=22 ansible_ssh_private_key_file="./keys/hongzhouchen.key" ansible_user=hongzhouchen host_name=uat
+
+[strategy:vars]
+STRAT_NAME=test
+STRAT_KEY_FILE='./keys/codo.pub'
+
+#server need modify nautilus account
+[nautilus]
+huabao73 ansible_host=10.200.66.73 ansible_port=3022 ansible_ssh_private_key_file="./keys/hongzhouchen.key" ansible_user=phillip host_name=huabao73
+
+[nautilus:vars]
+NAUTILUS_KEY_FILE='./keys/nautilus_pub_key'
+
+#server need change key
+#[change_key:children] use machine group
+[change_key]
+guotou203
+
+[change_key:vars]
+CHANGE_USER_NAME=tto
+CHANGE_KEY_FILE='./tto.201704.pub'
+
+#server need set global env
+#[server:children] use server group
+[server]
+guotou203
+
+# use by tick_to_order.yml
+[TTO]
+guotou203
+
+[TTO:vars]
+TTO_USER=tto
+TTO_KEY_FILE='product_private.key'
+

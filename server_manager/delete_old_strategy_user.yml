@@ -1,0 +1,17 @@
+---
+- hosts: [strategy]
+  tasks:
+    - name: "delete user {{ STRAT_NAME }}"
+      become: yes
+      become_user: root
+      user:
+        name: "{{ STRAT_NAME }}"
+        # del user without del his home folder
+        state: absent
+
+        ### WARNING if you want to remove user home folder force, you can add this option
+        #force: yes
+        ### WARNING if you want to remove user home folder, you can add this option
+        #remove: yes
+...
+

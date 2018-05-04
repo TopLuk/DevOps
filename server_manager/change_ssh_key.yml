@@ -1,0 +1,9 @@
+---
+- hosts: [change_key]
+  vars:
+    USER_NAME: "{{ CHANGE_USER_NAME }}"
+    KEY_FILE: "{{ CHANGE_KEY_FILE }}"
+  tasks:
+    - include: task_template/change_ssh_key_task.yml
+...
+

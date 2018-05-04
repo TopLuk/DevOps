@@ -1,0 +1,32 @@
+---
+- hosts: [server]
+  vars:
+    sshd_config: "/etc/ssh/sshd_config"
+  tasks:
+    - include: task_template/config_ssh_login.yml
+    - name : "change hostname"
+      become: yes
+      become_user: root
+      hostname:
+        name: "{{ host_name }}"
+    - name : "save iptable"
+      become: yes
+      become_user: root
+      command: "/etc/init.d/iptables save"
+      args:
+        warn: no
+    - name : "stop iptable"
+      become: yes
+      become_user: root
+      command: "/etc/init.d/iptables stop"
+      args:
+        warn: no
+    - name : "turn off when boot"
+      become: yes
+      become_user: root
+      command: "chkconfig iptables off"
+      args:
+        warn: no
+  handlers:
+    - include: handlers/main.yml
+

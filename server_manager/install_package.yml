@@ -1,0 +1,86 @@
+---
+- hosts: [nautilus]
+  tasks:
+    - name : "install cset package"
+      become: yes
+      become_user: root
+      yum:
+        name: /nautilus/rpm_install/cpuset-1.5.6-1.1.x86_64.rpm
+        state: present
+    - name : "install telnet package"
+      become: yes
+      become_user: root
+      yum:
+        name: /nautilus/rpm_install/telnet-0.17-48.el6.x86_64.rpm
+        state: present
+    - name : "install htop package"
+      become: yes
+      become_user: root
+      yum:
+        name: /nautilus/rpm_install/htop-1.0.3-1.el6.x86_64.rpm
+        state: present
+    - name : "install sfc package"
+      become: yes
+      become_user: root
+      yum:
+        name: /nautilus/rpm_install/sfutils-6.0.3.1001-1.x86_64.rpm
+        state: present
+    # - name : "install kernel-2.6.32-642.11.1 package"
+    #   become: yes
+    #   become_user: root
+    #   yum:
+    #     name: /nautilus/rpm_install/kernel-devel-2.6.32-642.11.1.el6.x86_64.rpm
+    #     state: present
+    # - name : "install kernel-2.6.32-642 package"
+    #   become: yes
+    #   become_user: root
+    #   yum:
+    #     name: /nautilus/rpm_install/kernel-devel-2.6.32-642.el6.x86_64.rpm
+    #     state: present
+    # - name : "install ppl-0.10.2-11.el6.x86_64.rpm"
+    #   become: yes
+    #   become_user: root
+    #   yum:
+    #     name: /nautilus/rpm_install/ppl-0.10.2-11.el6.x86_64.rpm
+    #     state: present
+    # - name : "install cloog-ppl-0.15.7-1.2.el6.x86_64.rpm"
+    #   become: yes
+    #   become_user: root
+    #   yum:
+    #     name: /nautilus/rpm_install/cloog-ppl-0.15.7-1.2.el6.x86_64.rpm
+    #     state: present
+    # - name : "install cpp-4.4.7-17.el6.x86_64.rpm package"
+    #   become: yes
+    #   become_user: root
+    #   yum:
+    #     name: /nautilus/rpm_install/cpp-4.4.7-17.el6.x86_64.rpm
+    #     state: present
+    # - name : "install gcc package"
+    #   become: yes
+    #   become_user: root
+    #   yum:
+    #     name: /nautilus/rpm_install/gcc-4.4.7-17.el6.x86_64.rpm
+    #     state: present
+    - name : "install sfutils package"
+      become: yes
+      become_user: root
+      yum:
+        name: /nautilus/rpm_install/sfutils-6.0.3.1001-1.x86_64.rpm
+        state: present
+
+        #    - name : "install onload package"
+        #      become: yes
+        #      become_user: root
+        #      command: "/nautilus/rpm_install/openonload-201606-u1/scripts/onload_install"
+        #      args:
+        #        warn: no
+
+        #    - name: install the 'Development tools' package group
+        #      become: yes
+        #      become_user: root
+        #      yum:
+        #        name: "@Development tools"
+        #        state: present
+        #
+...
+

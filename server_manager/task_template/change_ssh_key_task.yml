@@ -1,0 +1,29 @@
+---
+    - name: set ssh path
+      become: yes
+      become_user: "{{ USER_NAME }}"
+      file:
+        path: '~/.ssh'
+        state: directory
+        mode: 0700
+    - name: set ssh key fie
+      become: yes
+      become_user: "{{ USER_NAME }}"
+      file:
+        path: '~/.ssh/authorized_keys'
+        state: touch
+        mode: 0600
+      register: authorized_keys_log
+      changed_when: authorized_keys_log.diff.before.state != "file"
+    - name: set ssh key login
+      become: yes
+      become_user: "{{USER_NAME}}"
+      authorized_key:
+        user: "{{ USER_NAME }}"
+        #key: "{{ lookup('file', '~/.ssh/other_key/ruizhe.prod.key.public') }}"
+        key: "{{ lookup('file', KEY_FILE) }}"
+        #key: "{{ item  }}"
+        state: present
+        exclusive: yes
+...
+

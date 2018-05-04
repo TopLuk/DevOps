@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
+    parameters {
+        string(name: 'MACHINE_NAME')
+        string(name: 'MACHINE_HOST')
+        string(name: 'SSH_PORT')
+        string(name: 'RULES')
+    }
+    stages {
+        stage('Upload Script') {
+            steps {
+                sh "./upload-script.sh"
+            }
+        }
+        stage('Detetct-Data') {
+            steps {
+                sh "./data-detect.sh"
+            }
+        }
+        stage('Alert') {
+            when {
+                expression {
+                    return fileExists('message')
+                }
+            }
+            steps {
+                script {
+                    def message = readFile('./message')
+                    message = "${params.MACHINE_NAME}:\r\n" + message
+                    build job: 'HIPCHAT-ROOM-NOTIFICATION', parameters: [
+                        string(name: 'ROOM', value: '31'), 
+                        string(name: 'COLOR', value: 'red'), 
+                        string(name: 'AUTH_TOKEN', value: 'e08kSERr6DKgpQLGNS6CTOdJoE6cf6p7whicrr77'), 
+                        string(name: 'MESSAGE', value: message)
+                    ], wait: false
+                }
+            }
+        }
+    }
+    post {
+        failure {
+            build job: 'HIPCHAT-ROOM-NOTIFICATION', parameters: [
+                string(name: 'ROOM', value: '39'), 
+                string(name: 'COLOR', value: 'red'), 
+                string(name: 'AUTH_TOKEN', value: 'Zi70f1FTkdFPBLS9nc0DO1gvtnmSmcLcmXaYwbtv'), 
+                string(name: 'MESSAGE', value: "Job ${env.JOB_NAME} failed: ${env.BUILD_URL}console")
+            ], wait: false
+        }
+    }
+}

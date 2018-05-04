@@ -1,0 +1,8 @@
+---
+    - name : "create {{ USER_NAME }} group"
+      become: yes
+      become_user: root
+      group:
+        name: "{{ USER_NAME }}"
+        state: present
+
