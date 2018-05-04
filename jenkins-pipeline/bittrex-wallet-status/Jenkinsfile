@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+    stages {
+      	stage('Phantomjs'){
+          agent{
+          		docker{
+            		image 'wernight/phantomjs'
+              		args '-u 0'
+            	}
+          	}
+          steps{
+            timeout(time: 240, unit: 'SECONDS') {
+          		sh 'phantomjs --proxy=172.30.70.51:8080 ${WORKSPACE}/bittrex-wallet-status/timeWait.js'
+            }
+          }
+      }
+        stage('ProcessData') {
+            steps {
+                withEnv(['HTTP_PROXY="http://172.30.70.51:8080"', 'HTTPS_PROXY="https://172.30.70.51:8080"']) {
+                  	sh "echo jenkins-${BUILD_NUMBER}"
+                    sh "python3 ${WORKSPACE}/bittrex-wallet-status/get_wallet.py --dbhost ${params.dbhost} --dbport ${params.dbport} --dbuser ${params.dbuser} --dbpassword ${params.dbpassword} --workspace ${WORKSPACE}"
+                }
+            }
+        }
+    }
+}

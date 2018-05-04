@@ -1,0 +1,20 @@
+pipeline {
+    agent any
+	options{
+		disableConcurrentBuilds()
+	}
+    stages {
+        stage('Transfer') {
+            steps{
+               sh '''
+			   export HTTP_PROXY="http://172.30.70.51:8080"
+			   export HTTPS_PROXY="http://172.30.70.51:8080"
+			   export http_proxy="http://172.30.70.51:8080"
+			   export https_proxy="http://172.30.70.51:8080"
+				'''
+			   sh "./setupEnv.sh"
+			   sh "python3 getHardwareInfo.py --url ${params.url} --name ${params.name} --dbhost ${params.dbhost} --dbport ${params.dbport} --dbuser ${params.dbuser} --dbpassword ${params.dbpassword}"
+            }
+        }
+    }
+}

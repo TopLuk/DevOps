@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+	options{
+		disableConcurrentBuilds()
+	}
+	triggers {
+        cron('H 0 */1 * *')
+    }
+    stages {
+        stage('Transfer') {
+            steps{
+		timeout(time: 60, unit: 'SECONDS') {
+          			sh "supmic-hdd-serial/setupEnv.sh"
+                  	sh "python3 supmic-hdd-serial/getSerial.py --url ${params.url} --dbhost ${params.dbhost} --dbport ${params.dbport} --dbuser ${params.dbuser} --dbpassword ${params.dbpassword}"
+            	}
+            }
+	}
+      	
+        stage('Checkout'){
+        	when{
+          		expression { readFile encoding: 'utf-8', file: 'supmic-hdd-serial/out' }
+        	}
+        	steps{
+			build job: 'HIPCHAT-ROOM-NOTIFICATION', parameters: [
+			string(name: 'ROOM', value: '39'),
+			string(name: 'COLOR', value: 'red'),
+			string(name: 'AUTH_TOKEN', value: 'Zi70f1FTkdFPBLS9nc0DO1gvtnmSmcLcmXaYwbtv'),
+			string(name: 'MESSAGE', value: "Job ${env.JOB_NAME} WARNING: ${env.BUILD_URL}console Hark disk has been stolen! Original serial Number is: ${params.ori_serial} \n Realtime serial number is: ${params.realtime_serial}")
+					] 
+        	}
+      	}
+    }
+  	post{
+    	failure{
+      		build job: 'HIPCHAT-ROOM-NOTIFICATION', parameters: [
+					string(name: 'ROOM', value: '39'),
+					string(name: 'COLOR', value: 'red'),
+					string(name: 'AUTH_TOKEN', value: 'Zi70f1FTkdFPBLS9nc0DO1gvtnmSmcLcmXaYwbtv'),
+					string(name: 'MESSAGE', value: "Job ${env.JOB_NAME} WARNING: ${env.BUILD_URL}console Disconnected from ${params.url}")
+					] 
+      }
+    }
+}

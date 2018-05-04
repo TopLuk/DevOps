@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+	options{
+		disableConcurrentBuilds()
+	}
+	triggers {
+        cron('H 0 */1 * *')
+    }
+    stages {
+        stage('Transfer') {
+            steps{
+				timeout(time: 60, unit: 'SECONDS') {
+                  	sh "rm -rf ${params.out}"
+               		sh "ssh -p ${params.port} phillip@${params.ip} > ${params.out} < ./${params.getSpace}"
+            	}
+        	}
+		}
+      	
+          	stage('Checkout'){
+              	when{
+          			expression { readFile encoding: 'utf-8', file: 'trade-front-hard-disk/out' }
+        		}
+        		steps{
+					build job: 'HIPCHAT-ROOM-NOTIFICATION', parameters: [
+					string(name: 'ROOM', value: '39'),
+					string(name: 'COLOR', value: 'purple'),
+					string(name: 'AUTH_TOKEN', value: 'Zi70f1FTkdFPBLS9nc0DO1gvtnmSmcLcmXaYwbtv'),
+					string(name: 'MESSAGE', value: "Job ${env.JOB_NAME} WARNING: ${env.BUILD_URL}console Hard disk is about to explode!")
+					] 
+        		}
+      		}
+	}
+  	post{
+      failure{
+      		build job: 'HIPCHAT-ROOM-NOTIFICATION', parameters: [
+					string(name: 'ROOM', value: '39'),
+					string(name: 'COLOR', value: 'red'),
+					string(name: 'AUTH_TOKEN', value: 'Zi70f1FTkdFPBLS9nc0DO1gvtnmSmcLcmXaYwbtv'),
+					string(name: 'MESSAGE', value: "Job ${env.JOB_NAME} WARNING: ${env.BUILD_URL}console Disconnected from ${params.ip}")
+					] 
+      }
+    }
+}

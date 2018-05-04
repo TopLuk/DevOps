@@ -1,0 +1,69 @@
+pipeline {
+    agent any
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+         disableConcurrentBuilds()
+    }
+    stages {
+        stage ('Checkout source code') {
+            steps {
+                checkout changelog: false, poll: false, scm: [
+                    $class: 'GitSCM', 
+                    branches: [[name: '*/master']], 
+                    doGenerateSubmoduleConfigurations: false, 
+                    extensions: [
+                        [$class: 'CloneOption', noTags: true, reference: '', shallow: true], 
+                        [$class: 'RelativeTargetDirectory', relativeTargetDir: 'blockchain_exchange']
+                    ], 
+                    submoduleCfg: [], 
+                    userRemoteConfigs: [
+                        [credentialsId: '485b9bb5-1fd4-4e83-939c-b049fcde30e4', url: 'http://bitbucket.nautiluscapital.net/scm/ex/blockchain_exchange.git']
+                    ]
+                ]
+                checkout changelog: false, poll: false, scm: [
+                    $class: 'GitSCM', 
+                    branches: [[name: '*/bitmexTrigger']], 
+                    doGenerateSubmoduleConfigurations: false, 
+                    extensions: [
+                        [$class: 'CloneOption', noTags: true, reference: '', shallow: true], 
+                        [$class: 'RelativeTargetDirectory', relativeTargetDir: 'crypto-mm']
+                    ], 
+                    submoduleCfg: [], 
+                    userRemoteConfigs: [
+                        [credentialsId: '485b9bb5-1fd4-4e83-939c-b049fcde30e4', url: 'http://bitbucket.nautiluscapital.net/scm/ct/crypto-mm.git']
+                    ]
+                ]
+            }
+        }
+        stage ('Upload soruce code') {
+            parallel {
+                stage('Main-APPS') {
+                    steps {
+                        sh '''
+                        rsync --compress -a \\
+                            -e "ssh -J phillip@172.30.50.121" \\
+                            blockchain_exchange phillip@54.238.187.166:/production
+
+                        rsync --compress -a \\
+                            -e "ssh -J phillip@172.30.50.121" \\
+                            crypto-mm phillip@54.238.187.166:/production
+                        '''
+                    }
+                }
+                stage('Other-Misc') {
+                    steps {
+                        sh '''
+                        rsync --compress -a \\
+                            -e "ssh -J phillip@172.30.50.121" \\
+                            blockchain_exchange phillip@54.249.4.45:/production
+
+                        rsync --compress -a \\
+                            -e "ssh -J phillip@172.30.50.121" \\
+                            crypto-mm phillip@54.249.4.45:/production
+                        '''
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,10 @@
+#!/bin/bash
+out='./out'
+if [ ! -f $out ];then
+	rm -rf $out
+fi
+
+space=`df -h |grep "/$" |cut -d"G" -f4 |cut -d"%" -f1 |sed s/[[:space:]]//g`
+if [ $space -ge 80 ];then
+	df -h |grep "/$" |cut -d"G" -f4 |cut -d"%" -f1 |sed s/[[:space:]]//g
+fi
